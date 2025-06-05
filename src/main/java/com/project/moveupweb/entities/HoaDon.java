@@ -18,14 +18,16 @@ public class HoaDon {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "ma_hoa_don")
+    @Column(name = "ma_hoa_don", unique = true, nullable = false)
     private String maHoaDon;
 
-    @Column(name = "id_co_so")
-    private Long idCoSo;
+    @ManyToOne
+    @JoinColumn(name = "id_co_so", referencedColumnName = "id")
+    private CoSo coSo;
 
-    @Column(name = "id_khach_hang")
-    private Long idKhachHang;
+    @ManyToOne
+    @JoinColumn(name = "id_khach_hang", referencedColumnName = "id")
+    private KhachHang khachHang;
 
     @Column(name = "ten_khach_hang")
     private String tenKhachHang;
@@ -39,8 +41,9 @@ public class HoaDon {
     @Column(name = "dia_chi_khach_hang")
     private String diaChiKhachHang;
 
-    @Column(name = "id_nhan_vien")
-    private Long idNhanVien;
+    @ManyToOne
+    @JoinColumn(name = "id_nhan_vien", referencedColumnName = "id")
+    private NhanVien nhanVien;
 
     @Column(name = "ghi_chu")
     private String ghiChu;
@@ -69,12 +72,14 @@ public class HoaDon {
     @Column(name = "ngay_tao")
     private Timestamp ngayTao;
 
-    @Column(name = "nguoi_tao")
-    private Long nguoiTao;
+    @ManyToOne
+    @JoinColumn(name = "nguoi_tao", referencedColumnName = "id")
+    private TaiKhoan nguoiTao;
 
     @Column(name = "ngay_cap_nhat")
     private Timestamp ngayCapNhat;
 
-    @Column(name = "nguoi_cap_nhat")
-    private Long nguoiCapNhat;
+    @ManyToOne
+    @JoinColumn(name = "nguoi_cap_nhat", referencedColumnName = "id")
+    private TaiKhoan nguoiCapNhat;
 }
