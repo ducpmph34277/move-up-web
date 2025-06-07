@@ -16,12 +16,12 @@ public class DanhMucCon {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "id_danh_muc", referencedColumnName = "id")
     private DanhMuc danhMuc;
 
     @Column(name = "ten_danh_muc_con")
-    private String tenDanHMucCon;
+    private String tenDanhMucCon;
 
     @Column(name = "trang_thai")
     private Boolean trangThai;

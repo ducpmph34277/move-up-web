@@ -24,11 +24,11 @@ public class Giay {
     @Column(name = "trang_thai")
     private Boolean trangThai;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "id_danh_muc", referencedColumnName = "id")
     private DanhMuc danhMuc;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "id_danh_muc_con", referencedColumnName = "id")
     private DanhMucCon danhMucCon;
 

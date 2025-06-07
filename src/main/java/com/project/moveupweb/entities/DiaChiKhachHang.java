@@ -13,11 +13,10 @@ import lombok.Setter;
 @Setter
 @Table(name = "dia_chi_khach_hang")
 public class DiaChiKhachHang {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "id_khach_hang", referencedColumnName = "id")
     private KhachHang khachHang;
 

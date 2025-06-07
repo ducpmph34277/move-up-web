@@ -15,16 +15,15 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @Table(name = "chi_tiet_giay")
 public class ChiTietGiay {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "id_giay", referencedColumnName = "id")
     private Giay giay;
 
     @Column(name = "sku")
-    private String maGiay;
+    private String sku;
 
     @Column(name = "gia_nhap")
     private Long giaNhap;
@@ -36,7 +35,7 @@ public class ChiTietGiay {
     private String mauSac;
 
     @Column(name = "size")
-    private int size;
+    private Integer size;
 
     @Column(name = "anh")
     private String anh;
