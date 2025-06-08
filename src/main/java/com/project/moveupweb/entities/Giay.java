@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -50,4 +52,6 @@ public class Giay {
     @Column(name = "uu_tien")
     private Integer uuTien;
 
+    @OneToMany(mappedBy = "giay", fetch = FetchType.LAZY)
+    private List<ChiTietGiay> chiTietGiay;
 }

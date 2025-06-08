@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 @Entity
 @AllArgsConstructor
@@ -82,4 +83,7 @@ public class HoaDon {
     @ManyToOne
     @JoinColumn(name = "nguoi_cap_nhat", referencedColumnName = "id")
     private TaiKhoan nguoiCapNhat;
+
+    @OneToMany(mappedBy = "hoaDon", fetch = FetchType.LAZY)
+    private List<ChiTietHoaDon> chiTietHoaDon;
 }
