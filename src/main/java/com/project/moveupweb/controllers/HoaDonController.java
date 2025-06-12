@@ -45,7 +45,7 @@ public class HoaDonController {
     private ChiTietHoaDonRepository chiTietHoaDonRepository;
 
     @GetMapping
-    public ResponseEntity<Object> findAll(
+    public ResponseEntity<?> findAll(
             @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "50") Integer pageSize,
             @RequestParam(defaultValue = "id") String sortBy,
@@ -56,6 +56,20 @@ public class HoaDonController {
         Page<HoaDon> list = hoaDonRepository.findAll(pageable);
         Page<AdminHoaDonList> results = list.map(AdminHoaDonList::new);
         return ResponseEntity.ok(results);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> findById(@PathVariable Long id) {
+        try {
+            HoaDon hoaDon = hoaDonRepository.findById(id)
+                    .orElseThrow(() -> new NoSuchElementException("Không tìm thấy hóa đơn với ID: " + id));
+            AdminHoaDonList result = new AdminHoaDonList(hoaDon);
+            return ResponseEntity.ok(result);
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi hệ thống: " + e.getMessage());
+        }
     }
 
     @Transactional
