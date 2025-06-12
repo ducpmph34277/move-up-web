@@ -58,6 +58,7 @@ public class AdminHoaDonList {
         private String mauSac;
         private Integer size;
         private String anh;
+        private Long soLuong;
         private Boolean trangThai;
     }
 
@@ -118,6 +119,7 @@ public class AdminHoaDonList {
             chiTietGiayDto.setMauSac(ctg.getMauSac());
             chiTietGiayDto.setSize(ctg.getSize());
             chiTietGiayDto.setAnh(ctg.getAnh());
+            chiTietGiayDto.setSoLuong(ctg.getSoLuong());
             chiTietGiayDto.setTrangThai(ctg.getTrangThai());
 
             Giay giay = ctg.getGiay();
