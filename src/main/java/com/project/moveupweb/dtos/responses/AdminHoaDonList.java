@@ -1,4 +1,4 @@
-package com.project.moveupweb.dtos;
+package com.project.moveupweb.dtos.responses;
 
 import com.project.moveupweb.entities.*;
 import lombok.*;

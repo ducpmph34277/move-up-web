@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface HoaDonRepository extends JpaRepository<HoaDon, Long> {
     @EntityGraph(attributePaths = {
@@ -17,4 +19,6 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Long> {
             "nguoiCapNhat"
     })
     Page<HoaDon> findAll(Pageable pageable);
+
+    Optional<HoaDon> findByMaHoaDon(String maHoaDon);
 }

@@ -1,4 +1,4 @@
-package com.project.moveupweb.dtos;
+package com.project.moveupweb.dtos.requests;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -14,52 +14,26 @@ import java.util.List;
 @Getter
 @Setter
 public class AdminHoaDonForm {
-
-    @NotNull
     private String maHoaDon;
-
-    @NotNull
     private Long idCoSo;
-
     private Long idKhachHang;
-
     private String tenKhachHang;
-
     private String soDienThoaiKhachHang;
-
     private String emailKhachHang;
-
     private String diaChiKhachHang;
-
-    @NotNull
     private Long idNhanVien;
-
     private String ghiChu;
-
     private String ghiChuKhachHang;
-
-    @NotNull
     private Boolean donVanChuyen;
-
     private Long tongThanhToan;
-
     private Long tienKhachTra;
-
     private String loaiHinhThanhToan;
-
     private String trangThaiGiaoDich;
-
     private String trangThaiHoaDon;
-
     private Timestamp ngayTao;
-
     private Long nguoiTao;
-
     private Timestamp ngayCapNhat;
-
     private Long nguoiCapNhat;
-
-    @NotNull
     private List<AdminChiTietHoaDon> chiTietHoaDon;
 
     @Getter
@@ -67,13 +41,8 @@ public class AdminHoaDonForm {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class AdminChiTietHoaDon {
-        @NotNull
         private Long idChiTietGiay;
-
-        @NotNull
         private Integer soLuong;
-
-        @NotNull
         private Long thanhTien;
     }
 }

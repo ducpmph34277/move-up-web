@@ -1,7 +1,7 @@
 package com.project.moveupweb.controllers;
 
-import com.project.moveupweb.dtos.AdminHoaDonForm;
-import com.project.moveupweb.dtos.AdminHoaDonList;
+import com.project.moveupweb.dtos.requests.AdminHoaDonForm;
+import com.project.moveupweb.dtos.responses.AdminHoaDonList;
 import com.project.moveupweb.entities.ChiTietHoaDon;
 import com.project.moveupweb.entities.HoaDon;
 import com.project.moveupweb.repositories.*;
@@ -13,7 +13,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+
+import java.sql.Timestamp;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/hoa-don")
@@ -40,30 +45,36 @@ public class HoaDonController {
     private ChiTietHoaDonRepository chiTietHoaDonRepository;
 
     @GetMapping
-    public ResponseEntity<Object> findAll(@RequestParam(defaultValue = "1") Integer page,
-                                          @RequestParam(defaultValue = "50") Integer pageSize) {
-        if (page < 1 || pageSize < 1) {
-            page = 1;
-            pageSize = 50;
-        }
-        Pageable pageable = PageRequest.of(page - 1, pageSize, Sort.by("id").descending());
+    public ResponseEntity<Object> findAll(
+            @RequestParam(defaultValue = "1") Integer page,
+            @RequestParam(defaultValue = "50") Integer pageSize,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "desc") String order
+    ) {
+        Sort.Direction direction = order.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Pageable pageable = PageRequest.of(page - 1, pageSize, Sort.by(direction, sortBy));
         Page<HoaDon> list = hoaDonRepository.findAll(pageable);
         Page<AdminHoaDonList> results = list.map(AdminHoaDonList::new);
         return ResponseEntity.ok(results);
     }
 
+    @Transactional
     @PostMapping
     public ResponseEntity<?> save(@Valid @RequestBody AdminHoaDonForm form) {
         try {
             HoaDon hoaDon = new HoaDon();
+            Optional<HoaDon> existingHoaDon = hoaDonRepository.findByMaHoaDon(form.getMaHoaDon());
+            if (existingHoaDon.isPresent()) {
+                throw new IllegalArgumentException("Mã hóa đơn đã tồn tại: " + form.getMaHoaDon());
+            }
             hoaDon.setMaHoaDon(form.getMaHoaDon());
-            hoaDon.setCoSo(coSoRepository.findById(form.getIdCoSo()).orElseThrow());
+            hoaDon.setCoSo(coSoRepository.findById(form.getIdCoSo()).orElseThrow(() -> new NoSuchElementException("Không tìm thấy cơ sở với ID: " + form.getIdCoSo())));
             hoaDon.setKhachHang(form.getIdKhachHang() != null ? khachHangRepository.findById(form.getIdKhachHang()).orElse(null) : null);
             hoaDon.setTenKhachHang(form.getTenKhachHang());
             hoaDon.setSoDienThoaiKhachHang(form.getSoDienThoaiKhachHang());
             hoaDon.setEmailKhachHang(form.getEmailKhachHang());
             hoaDon.setDiaChiKhachHang(form.getDiaChiKhachHang());
-            hoaDon.setNhanVien(nhanVienRepository.findById(form.getIdNhanVien()).orElseThrow());
+            hoaDon.setNhanVien(nhanVienRepository.findById(form.getIdNhanVien()).orElseThrow(() -> new NoSuchElementException("Không tìm thấy nhân viên với ID: " + form.getIdNhanVien())));
             hoaDon.setGhiChu(form.getGhiChu());
             hoaDon.setGhiChuKhachHang(form.getGhiChuKhachHang());
             hoaDon.setDonVanChuyen(form.getDonVanChuyen());
@@ -72,10 +83,8 @@ public class HoaDonController {
             hoaDon.setLoaiHinhThanhToan(form.getLoaiHinhThanhToan());
             hoaDon.setTrangThaiGiaoDich(form.getTrangThaiGiaoDich());
             hoaDon.setTrangThaiHoaDon(form.getTrangThaiHoaDon());
-            hoaDon.setNgayTao(form.getNgayTao());
-            hoaDon.setNguoiTao(form.getNguoiTao() != null ? taiKhoanRepository.findById(form.getNguoiTao()).orElse(null) : null);
-            hoaDon.setNgayCapNhat(form.getNgayCapNhat());
-            hoaDon.setNguoiCapNhat(form.getNguoiCapNhat() != null ? taiKhoanRepository.findById(form.getNguoiCapNhat()).orElse(null) : null);
+            hoaDon.setNgayTao(new Timestamp(System.currentTimeMillis()));
+            hoaDon.setNguoiTao(taiKhoanRepository.findById(form.getNguoiTao()).orElseThrow(() -> new NoSuchElementException("Không tìm thấy tài khoản với ID: " + form.getNguoiTao())));
 
             hoaDonRepository.save(hoaDon);
 
@@ -90,7 +99,59 @@ public class HoaDonController {
 
             return ResponseEntity.ok().body("Hóa đơn được tạo thành công");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Hóa đơn lỗi rồi");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @Transactional
+    @PutMapping("/{id}")
+    public ResponseEntity<?> update(@Valid @PathVariable Long id, @RequestBody AdminHoaDonForm form) {
+        try {
+            HoaDon hoaDon = hoaDonRepository.findById(id)
+                    .orElseThrow(() -> new NoSuchElementException("Không tìm thấy hóa đơn với ID: " + id));
+            if ("Chờ xác nhận".equals(hoaDon.getTrangThaiHoaDon())) {
+                hoaDon.setCoSo(coSoRepository.findById(form.getIdCoSo()).orElseThrow(() -> new NoSuchElementException("Không tìm thấy cơ sở với ID: " + form.getIdCoSo())));
+                hoaDon.setKhachHang(form.getIdKhachHang() != null ? khachHangRepository.findById(form.getIdKhachHang()).orElse(null) : null);
+                hoaDon.setTenKhachHang(form.getTenKhachHang());
+                hoaDon.setSoDienThoaiKhachHang(form.getSoDienThoaiKhachHang());
+                hoaDon.setEmailKhachHang(form.getEmailKhachHang());
+                hoaDon.setDiaChiKhachHang(form.getDiaChiKhachHang());
+                hoaDon.setGhiChu(form.getGhiChu());
+                hoaDon.setGhiChuKhachHang(form.getGhiChuKhachHang());
+                hoaDon.setTrangThaiGiaoDich(form.getTrangThaiGiaoDich());
+                hoaDon.setNgayCapNhat(new Timestamp(System.currentTimeMillis()));
+                hoaDon.setNguoiCapNhat(taiKhoanRepository.findById(form.getNguoiCapNhat()).orElseThrow(() -> new NoSuchElementException("Không tìm thấy tài khoản với ID: " + form.getNguoiCapNhat())));
+            } else {
+                hoaDon.setTrangThaiHoaDon(form.getTrangThaiHoaDon());
+            }
+            hoaDonRepository.save(hoaDon);
+            return ResponseEntity.ok("Hóa đơn đã được cập nhật thành công.");
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @Transactional
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(@PathVariable Long id) {
+        try {
+            HoaDon hoaDon = hoaDonRepository.findById(id)
+                    .orElseThrow(() -> new NoSuchElementException("Không tìm thấy hóa đơn với ID: " + id));
+            if ("Chờ xác nhận".equals(hoaDon.getTrangThaiHoaDon())) {
+                chiTietHoaDonRepository.deleteByHoaDonId(id);
+                hoaDonRepository.delete(hoaDon);
+                return ResponseEntity.ok("Hóa đơn đã xóa thành công");
+            } else {
+                hoaDon.setTrangThaiHoaDon("Đã hủy");
+                hoaDonRepository.save(hoaDon);
+                return ResponseEntity.ok("Hóa đơn đã được hủy thành công");
+            }
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 }
