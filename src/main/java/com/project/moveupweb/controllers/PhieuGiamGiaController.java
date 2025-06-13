@@ -64,7 +64,7 @@ public class PhieuGiamGiaController {
             PhieuGiamGia phieuGiamGia = new PhieuGiamGia();
             Optional<PhieuGiamGia> existingPhieuGiamGia = phieuGiamGiaRepository.findByMaGiamGia(phieuGiamGia.getMaGiamGia());
             if (existingPhieuGiamGia.isPresent()) {
-                throw new IllegalArgumentException("Mã hóa đơn đã tồn tại: " + phieuGiamGia.getMaGiamGia());
+                throw new IllegalArgumentException("Phiếu giảm giá đã tồn tại: " + phieuGiamGia.getMaGiamGia());
             }
 
             phieuGiamGia.setMaGiamGia(phieuGiamGiaRequest.getMaGiamGia());
