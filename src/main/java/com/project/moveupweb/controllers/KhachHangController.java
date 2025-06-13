@@ -110,7 +110,7 @@ public class KhachHangController {
     }
 
     // Lấy danh sách tất cả
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<List<KhachHangResponse>> getAll() {
         List<KhachHang> list = khachHangRepository.findAll();
         return ResponseEntity.ok(list.stream().map(KhachHangResponse::new).collect(Collectors.toList()));
