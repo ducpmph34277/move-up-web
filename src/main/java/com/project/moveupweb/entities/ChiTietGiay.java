@@ -40,6 +40,9 @@ public class ChiTietGiay {
     @Column(name = "anh")
     private String anh;
 
+    @Column(name = "so_luong")
+    private Long soLuong;
+
     @Column(name = "trang_thai")
     private Boolean trangThai;
 }
