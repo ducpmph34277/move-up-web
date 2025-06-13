@@ -74,7 +74,7 @@ public class HoaDonController {
 
     @Transactional
     @PostMapping
-    public ResponseEntity<?> save(@Valid @RequestBody AdminHoaDonForm form) {
+    public ResponseEntity<?> create(@Valid @RequestBody AdminHoaDonForm form) {
         try {
             HoaDon hoaDon = new HoaDon();
             Optional<HoaDon> existingHoaDon = hoaDonRepository.findByMaHoaDon(form.getMaHoaDon());
