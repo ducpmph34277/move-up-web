@@ -1,6 +1,7 @@
 package com.project.moveupweb.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,27 +21,37 @@ public class PhieuGiamGia {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "")
+    @Column(name = "ma_giam_gia")
     private String maGiamGia;
 
+    @Column(name = "ten_giam_gia")
     private String tenGiamGia;
 
+    @Column(name = "phan_tram_giam")
     private Integer phanTramGiam;
 
+    @Column(name = "gia_tien_giam")
     private Long giaTienGiam;
 
+    @Column(name = "gia_tri_toi_thieu")
     private Long giaTriToiThieu;
 
+    @Column(name = "gia_tri_toi_da")
     private Long giaTriToiDa;
 
+    @Column(name = "so_luong")
     private Integer soLuong;
 
+    @Column(name = "ngay_bat_dau")
     private Timestamp ngayBatDau;
 
+    @Column(name = "ngay_ket_thuc")
     private Timestamp ngayKetThuc;
 
+    @Column(name = "trang_thai")
     private Boolean trangThai;
 
+    @Column(name = "mo_ta")
     private String moTa;
 
     @Column(name = "ngay_tao")
@@ -56,4 +67,6 @@ public class PhieuGiamGia {
     @ManyToOne
     @JoinColumn(name = "nguoi_cap_nhat", referencedColumnName = "id")
     private TaiKhoan nguoiCapNhat;
+
+
 }
